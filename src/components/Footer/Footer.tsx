@@ -1,25 +1,26 @@
 import { setPage } from "../../store/slice";
 import "./Footer.css";
 import { useSelector, useDispatch } from "react-redux";
-import { setDeleteSelectedData } from "../../store/slice";
 
 const Footer = () => {
-    const filteredData = useSelector((state: any) => state.data.filteredData);
-    const currentPage = useSelector((state: any) => state.data.currentPage);
-    const totalPage = useSelector((state: any) => state.data.allPage);
-
     const dispatch = useDispatch();
 
+    const filteredData = useSelector((state: any) => state.data.filteredData);
+    const currentPage = useSelector((state: any) => state.data.currentPage);
+
+    const totalPage = Math.ceil(filteredData.length / 10);
     const selectedRows = filteredData.filter(
         (data: any) => data.checked
     ).length;
     const totalRows = filteredData.length;
 
+    const startPage = Math.min(
+        Math.max(1, currentPage),
+        Math.max(1, totalPage - 4)
+    );
+    const endPage = Math.min(totalPage, currentPage + 4);
+
     const buttonArray = [];
-
-    const startPage = Math.min(currentPage, Math.max(1, totalPage - 5));
-    const endPage = Math.min(totalPage, currentPage + 5);
-
     for (let i = startPage; i <= endPage; i++) {
         if (i <= totalPage) {
             buttonArray.push(i);
@@ -33,28 +34,12 @@ const Footer = () => {
         dispatch(setPage(pageNumber));
     };
 
-    const deleteSelectedHandler = () => {
-        const selectedData = filteredData.filter((data: any) => data.checked);
-        const selectedId = selectedData.map((data: any) => data.id);
-        dispatch(setDeleteSelectedData(selectedId));
-    };
-
-    const isButtonRed = (pageNumber: number) => pageNumber === currentPage;
-
     return (
         <div className="footer">
             <div className="footer-content">
                 <div className="left-footer">
                     <div>
-                        <button
-                            className="delete-selected"
-                            onClick={deleteSelectedHandler}
-                        >
-                            Delete Selected
-                        </button>
-                    </div>
-                    <div>
-                        {selectedRows} of {totalRows} selected
+                        {selectedRows} of {totalRows} row(s) selected
                     </div>
                 </div>
                 <div className="right-footer">
@@ -79,7 +64,9 @@ const Footer = () => {
                             <button
                                 key={pageNumber}
                                 className={
-                                    isButtonRed(pageNumber) ? "red-button" : ""
+                                    pageNumber === currentPage
+                                        ? "red-button"
+                                        : ""
                                 }
                                 onClick={() => changePageHandler(pageNumber)}
                             >

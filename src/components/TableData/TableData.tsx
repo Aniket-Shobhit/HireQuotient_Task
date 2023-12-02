@@ -1,99 +1,103 @@
-import "./TableData.css";
-import { useState, useRef } from "react";
+import UserBar from "../DataRow/DataRow";
+import { useSelector, useDispatch } from "react-redux";
+import { useEffect } from "react";
+import {
+    setAllData,
+    setDeleteSingleData,
+    setEditSingleData,
+    setEditSelectedData,
+} from "../../store/slice";
 import { User } from "../../types";
-import { MdEdit } from "react-icons/md";
-import { MdDelete } from "react-icons/md";
-import { MdDownloadDone } from "react-icons/md";
-import { useDispatch } from "react-redux";
-import { setEditSingleData } from "../../store/slice";
+import "./TableData.css";
 
-interface UserBarProps {
-    user: User;
-    selectOneDataHandler: (id: string) => void;
-    deleteOneDataHandler: (id: string) => void;
-}
-
-const UserBar: React.FC<UserBarProps> = ({
-    user,
-    selectOneDataHandler,
-    deleteOneDataHandler,
-}) => {
-    const [editable, setEditable] = useState<boolean>(false);
-    const [currentUser, setCurrentUser] = useState<User>(user);
-    const nameRef = useRef<HTMLInputElement>(null);
-    const emailRef = useRef<HTMLInputElement>(null);
-    const roleRef = useRef<HTMLInputElement>(null);
-
+const TableData = () => {
     const dispatch = useDispatch();
 
-    const editDataHandler = () => {
-        setEditable(true);
+    useEffect(() => {
+        fetch(
+            "https://geektrust.s3-ap-southeast-1.amazonaws.com/adminui-problem/members.json"
+        )
+            .then((response) => response.json())
+            .then((data) => {
+                data.forEach((user: User) => {
+                    user.checked = false;
+                });
+                dispatch(setAllData(data));
+            })
+            .catch((error) => console.error("Error fetching tasks:", error));
+    }, [dispatch]);
+
+    const pageNumber: number = useSelector(
+        (state: any) => state.data.currentPage
+    );
+
+    const filteredData: Array<User> = useSelector(
+        (state: any) => state.data.filteredData
+    );
+
+    const currentData = filteredData.slice(
+        (pageNumber - 1) * 10,
+        pageNumber * 10
+    );
+
+    const selectDataHandler = (e: any) => {
+        const selectedId = currentData.map((user) => user.id);
+        dispatch(
+            setEditSelectedData({ data: selectedId, checked: e.target.checked })
+        );
     };
 
-    const doneDataHandler = () => {
-        const name = nameRef.current?.value || user.name;
-        const email = emailRef.current?.value || user.email;
-        const role = roleRef.current?.value || user.role;
-        const newUser = { ...currentUser, name, email, role };
-        setCurrentUser(newUser);
-        dispatch(setEditSingleData(newUser));
-        setEditable(false);
+    const selectOneDataHandler = (id: string) => {
+        const selectedData = filteredData.find((user) => user.id === id);
+        if (selectedData) {
+            const updatedData = {
+                ...selectedData,
+                checked: !selectedData.checked,
+            };
+            dispatch(setEditSingleData(updatedData));
+        }
+    };
+
+    const deleteOneDataHandler = (id: string) => {
+        dispatch(setDeleteSingleData(id));
     };
 
     return (
-        <div className={user.checked ? "user-bar gray-data" : "user-bar"}>
-            <div>
-                <input
-                    className="checkbox"
-                    type="checkbox"
-                    onChange={() => selectOneDataHandler(user.id)}
-                    checked={user.checked}
-                />
+        <div className="user-table">
+            <div className="table-header">
+                <div>
+                    <input
+                        className="checkbox"
+                        type="checkbox"
+                        onChange={selectDataHandler}
+                        checked={
+                            (currentData.length &&
+                                currentData.every((user) => user.checked)) ||
+                            false
+                        }
+                    />
+                </div>
+                <div>Name</div>
+                <div>Email</div>
+                <div>Role</div>
+                <div>Actions</div>
             </div>
-            {!editable ? (
-                <>
-                    <div>{currentUser.name}</div>
-                    <div>{currentUser.email}</div>
-                    <div>{currentUser.role}</div>
-                </>
+            {currentData.length ? (
+                <div>
+                    {currentData.map((user) => (
+                        <UserBar
+                            key={user.id}
+                            user={user}
+                            selectOneDataHandler={selectOneDataHandler}
+                            deleteOneDataHandler={deleteOneDataHandler}
+                        />
+                    ))}
+                </div>
             ) : (
-                <>
-                    <input
-                        type="text"
-                        defaultValue={user.name}
-                        ref={nameRef}
-                    ></input>
-                    <input
-                        type="text"
-                        defaultValue={user.email}
-                        ref={emailRef}
-                    ></input>
-                    <input
-                        type="text"
-                        defaultValue={user.role}
-                        ref={roleRef}
-                    ></input>
-                </>
+                <h1 className="no-data">No Data to display</h1>
             )}
-            <div className="icons">
-                {!editable ? (
-                    <button className="edit-icon" onClick={editDataHandler}>
-                        <MdEdit />
-                    </button>
-                ) : (
-                    <button className="edit-icon" onClick={doneDataHandler}>
-                        <MdDownloadDone />
-                    </button>
-                )}
-                <button
-                    className="delete-icon"
-                    onClick={() => deleteOneDataHandler(user.id)}
-                >
-                    <MdDelete />
-                </button>
-            </div>
         </div>
     );
 };
 
-export default UserBar;
+export default TableData;

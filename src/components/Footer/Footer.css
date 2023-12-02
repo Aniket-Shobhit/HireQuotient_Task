@@ -2,7 +2,7 @@
     position: fixed;
     bottom: 0;
     width: 100%;
-    height: 3rem;
+    height: 2.5rem;
 }
 
 .footer-content {
@@ -15,7 +15,10 @@
 
 .left-footer {
     display: flex;
+    justify-content: space-between;
+    width: 18%;
     align-items: center;
+    margin-left: 0.5rem;
 }
 
 .delete-selected {
@@ -29,6 +32,8 @@
 .right-footer {
     display: flex;
     justify-content: space-between;
+    width: 28%;
+
     align-items: center;
 }
 
@@ -40,6 +45,6 @@
 }
 
 .red-button {
-    background-color: #d45e5e;
+    background-color: #ef3f3f;
     color: #fff;
 }

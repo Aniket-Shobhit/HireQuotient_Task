@@ -1,7 +1,13 @@
-.search-bar {
+.header {
     display: flex;
     align-items: center;
-    justify-content: center;
+    justify-content: space-between;
+    padding: 16px;
+    background-color: #fff;
+}
+
+.search-bar {
+    width: 30%;
 }
 
 .searchInput {
@@ -10,7 +16,7 @@
     border: 1px solid #ccc;
     border-radius: 14px;
     margin-right: 16px;
-    width: 30%;
+    width: 70%;
 }
 
 .search-icon {
@@ -25,4 +31,9 @@
 
 .search-icon:hover {
     background-color: #e53232;
+}
+
+.delete-selected {
+    width: 45px;
+    border: none;
 }

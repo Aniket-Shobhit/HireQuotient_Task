@@ -4,14 +4,12 @@ import { User } from "../types";
 interface initialStateDatatype {
     allData: Array<User>;
     filteredData: Array<User>;
-    allPage: number;
     currentPage: number;
 }
 
 const initialState: initialStateDatatype = {
     allData: [],
     filteredData: [],
-    allPage: 0,
     currentPage: 1,
 };
 
@@ -19,18 +17,11 @@ export const dataSlice = createSlice({
     name: "data",
     initialState,
     reducers: {
-        setInitialData: (state, action) => {
-            state.allData = action.payload;
-            state.filteredData = action.payload;
-            state.allPage = Math.ceil(action.payload.length / 10);
-        },
         setAllData: (state, action) => {
             state.filteredData = action.payload;
             state.allData = action.payload;
-            state.allPage = Math.ceil(action.payload.length / 10);
         },
         setFilteredData: (state, action) => {
-            console.log(state.allData);
             const search = action.payload.toLowerCase();
             const filteredData = state.allData.filter((data) => {
                 const name = data.name.toLowerCase();
@@ -43,8 +34,38 @@ export const dataSlice = createSlice({
                 );
             });
             state.filteredData = filteredData;
-            state.allPage = Math.ceil(filteredData.length / 10);
-            state.currentPage = Math.min(state.currentPage, state.allPage);
+            state.currentPage = Math.min(
+                Math.max(1, state.currentPage),
+                Math.ceil(filteredData.length / 10)
+            );
+        },
+        setEditSingleData: (state, action) => {
+            const updatedFilteredData = state.filteredData.map((data) => {
+                if (data.id === action.payload.id) return action.payload;
+                return data;
+            });
+            const updatedAllData = state.allData.map((data) => {
+                if (data.id === action.payload.id) return action.payload;
+                return data;
+            });
+            state.filteredData = updatedFilteredData;
+            state.allData = updatedAllData;
+        },
+        setEditSelectedData: (state, action) => {
+            const updatedFilteredData = state.filteredData.map((data) => {
+                if (action.payload.data.includes(data.id)) {
+                    return { ...data, checked: action.payload.checked };
+                }
+                return data;
+            });
+            const updatedAllData = state.allData.map((data) => {
+                if (action.payload.data.includes(data.id)) {
+                    return { ...data, checked: action.payload.checked };
+                }
+                return data;
+            });
+            state.filteredData = updatedFilteredData;
+            state.allData = updatedAllData;
         },
         setDeleteSingleData: (state, action) => {
             state.filteredData = state.filteredData.filter(
@@ -53,8 +74,10 @@ export const dataSlice = createSlice({
             state.allData = state.allData.filter(
                 (data) => data.id !== action.payload
             );
-            state.allPage = Math.ceil(state.filteredData.length / 10);
-            state.currentPage = Math.min(state.currentPage, state.allPage);
+            state.currentPage = Math.min(
+                state.currentPage,
+                Math.ceil(state.filteredData.length / 10)
+            );
         },
         setDeleteSelectedData: (state, action) => {
             const updatedFilteredData = state.filteredData.filter((data) => {
@@ -71,34 +94,10 @@ export const dataSlice = createSlice({
             });
             state.filteredData = updatedFilteredData;
             state.allData = updatedAllData;
-        },
-        setEditData: (state, action) => {
-            const updatedFilteredData = state.filteredData.map((data) => {
-                if (action.payload.includes(data.id)) {
-                    return { ...data, checked: !data.checked };
-                }
-                return data;
-            });
-            const updatedAllData = state.allData.map((data) => {
-                if (action.payload.includes(data.id)) {
-                    return { ...data, checked: !data.checked };
-                }
-                return data;
-            });
-            state.filteredData = updatedFilteredData;
-            state.allData = updatedAllData;
-        },
-        setEditSingleData: (state, action) => {
-            const updatedFilteredData = state.filteredData.map((data) => {
-                if (data.id === action.payload.id) return action.payload;
-                return data;
-            });
-            const updatedAllData = state.allData.map((data) => {
-                if (data.id === action.payload.id) return action.payload;
-                return data;
-            });
-            state.filteredData = updatedFilteredData;
-            state.allData = updatedAllData;
+            state.currentPage = Math.min(
+                state.currentPage,
+                Math.ceil(state.filteredData.length / 10)
+            );
         },
         setPage: (state, action) => {
             const pageNumber = action.payload;
@@ -108,12 +107,11 @@ export const dataSlice = createSlice({
 });
 
 export const {
-    setInitialData,
     setAllData,
     setDeleteSingleData,
     setDeleteSelectedData,
     setFilteredData,
-    setEditData,
+    setEditSelectedData,
     setEditSingleData,
     setPage,
 } = dataSlice.actions;

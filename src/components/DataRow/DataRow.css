@@ -1,0 +1,31 @@
+.user-bar {
+    display: grid;
+    grid-template-columns: 0.5fr 1fr 1.5fr 1fr 1fr;
+    gap: 16px;
+    padding: 1rem 0.5rem;
+    border: 1px solid #ddd;
+    height: 1.2rem;
+}
+
+.checkbox {
+    transform: scale(1.3);
+    cursor: pointer;
+}
+
+.gray-data {
+    background-color: #ddd;
+}
+
+.icons-container {
+    display: flex;
+    justify-content: flex-start;
+    gap: 1rem;
+}
+
+.icons-container button {
+    background-color: white;
+    border: 1px solid #e5d3d3;
+    height: 25px;
+    cursor: pointer;
+    border-radius: 5px;
+}
