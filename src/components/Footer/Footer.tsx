@@ -1,21 +1,23 @@
 import { setPage } from "../../store/slice";
 import "./Footer.css";
 import { useSelector, useDispatch } from "react-redux";
+import { setDeleteSelectedData } from "../../store/slice";
 
 const Footer = () => {
-    const selectedData = useSelector((state: any) => state.data.selectedData);
-    const allData = useSelector((state: any) => state.data.filteredData);
+    const filteredData = useSelector((state: any) => state.data.filteredData);
     const currentPage = useSelector((state: any) => state.data.currentPage);
     const totalPage = useSelector((state: any) => state.data.allPage);
 
     const dispatch = useDispatch();
 
-    const selectedRows = selectedData.length;
-    const totalRows = allData.length;
+    const selectedRows = filteredData.filter(
+        (data: any) => data.checked
+    ).length;
+    const totalRows = filteredData.length;
 
     const buttonArray = [];
 
-    const startPage = Math.min(currentPage, totalPage - 5);
+    const startPage = Math.min(currentPage, Math.max(1, totalPage - 5));
     const endPage = Math.min(totalPage, currentPage + 5);
 
     for (let i = startPage; i <= endPage; i++) {
@@ -29,19 +31,25 @@ const Footer = () => {
             return;
         }
         dispatch(setPage(pageNumber));
-        console.log("Page Number", pageNumber);
+    };
+
+    const deleteSelectedHandler = () => {
+        const selectedData = filteredData.filter((data: any) => data.checked);
+        const selectedId = selectedData.map((data: any) => data.id);
+        dispatch(setDeleteSelectedData(selectedId));
     };
 
     const isButtonRed = (pageNumber: number) => pageNumber === currentPage;
-
-    console.log(allData);
 
     return (
         <div className="footer">
             <div className="footer-content">
                 <div className="left-footer">
                     <div>
-                        <button className="delete-selected">
+                        <button
+                            className="delete-selected"
+                            onClick={deleteSelectedHandler}
+                        >
                             Delete Selected
                         </button>
                     </div>

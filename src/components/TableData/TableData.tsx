@@ -5,14 +5,20 @@ import { MdEdit } from "react-icons/md";
 import { MdDelete } from "react-icons/md";
 import { MdDownloadDone } from "react-icons/md";
 import { useDispatch } from "react-redux";
-import { setEditData } from "../../store/slice";
+import { setEditSingleData } from "../../store/slice";
 
 interface UserBarProps {
     user: User;
+    selectOneDataHandler: (id: string) => void;
+    deleteOneDataHandler: (id: string) => void;
 }
 
-const UserBar: React.FC<UserBarProps> = ({ user }) => {
-    const [editable, setEditable] = useState(false);
+const UserBar: React.FC<UserBarProps> = ({
+    user,
+    selectOneDataHandler,
+    deleteOneDataHandler,
+}) => {
+    const [editable, setEditable] = useState<boolean>(false);
     const [currentUser, setCurrentUser] = useState<User>(user);
     const nameRef = useRef<HTMLInputElement>(null);
     const emailRef = useRef<HTMLInputElement>(null);
@@ -22,7 +28,6 @@ const UserBar: React.FC<UserBarProps> = ({ user }) => {
 
     const editDataHandler = () => {
         setEditable(true);
-        console.log("Edit Data");
     };
 
     const doneDataHandler = () => {
@@ -31,25 +36,18 @@ const UserBar: React.FC<UserBarProps> = ({ user }) => {
         const role = roleRef.current?.value || user.role;
         const newUser = { ...currentUser, name, email, role };
         setCurrentUser(newUser);
-        dispatch(setEditData(newUser));
+        dispatch(setEditSingleData(newUser));
         setEditable(false);
     };
 
-    const deleteDataHandler = () => {
-        console.log("Delete Data");
-    };
-
-    const selectDataHandler = (e: any) => {
-        console.log("Select Data", e.target.checked);
-    };
-
     return (
-        <div className="user-bar">
+        <div className={user.checked ? "user-bar gray-data" : "user-bar"}>
             <div>
                 <input
                     className="checkbox"
                     type="checkbox"
-                    onChange={selectDataHandler}
+                    onChange={() => selectOneDataHandler(user.id)}
+                    checked={user.checked}
                 />
             </div>
             {!editable ? (
@@ -87,7 +85,10 @@ const UserBar: React.FC<UserBarProps> = ({ user }) => {
                         <MdDownloadDone />
                     </button>
                 )}
-                <button className="delete-icon" onClick={deleteDataHandler}>
+                <button
+                    className="delete-icon"
+                    onClick={() => deleteOneDataHandler(user.id)}
+                >
                     <MdDelete />
                 </button>
             </div>

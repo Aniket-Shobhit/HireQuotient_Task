@@ -2,15 +2,15 @@ import { createSlice } from "@reduxjs/toolkit";
 import { User } from "../types";
 
 interface initialStateDatatype {
+    allData: Array<User>;
     filteredData: Array<User>;
-    selectedData: Array<string>;
     allPage: number;
     currentPage: number;
 }
 
 const initialState: initialStateDatatype = {
+    allData: [],
     filteredData: [],
-    selectedData: [],
     allPage: 0,
     currentPage: 1,
 };
@@ -19,13 +19,20 @@ export const dataSlice = createSlice({
     name: "data",
     initialState,
     reducers: {
-        setAllData: (state, action) => {
+        setInitialData: (state, action) => {
+            state.allData = action.payload;
             state.filteredData = action.payload;
             state.allPage = Math.ceil(action.payload.length / 10);
         },
+        setAllData: (state, action) => {
+            state.filteredData = action.payload;
+            state.allData = action.payload;
+            state.allPage = Math.ceil(action.payload.length / 10);
+        },
         setFilteredData: (state, action) => {
+            console.log(state.allData);
             const search = action.payload.toLowerCase();
-            const filteredData = state.filteredData.filter((data) => {
+            const filteredData = state.allData.filter((data) => {
                 const name = data.name.toLowerCase();
                 const email = data.email.toLowerCase();
                 const role = data.role.toLowerCase();
@@ -36,74 +43,78 @@ export const dataSlice = createSlice({
                 );
             });
             state.filteredData = filteredData;
-            // state.currentData = filteredData.slice(0, 10);
+            state.allPage = Math.ceil(filteredData.length / 10);
+            state.currentPage = Math.min(state.currentPage, state.allPage);
         },
-        setDeleteData: (state, action) => {
+        setDeleteSingleData: (state, action) => {
             state.filteredData = state.filteredData.filter(
-                (data) => data.id !== action.payload.id
+                (data) => data.id !== action.payload
+            );
+            state.allData = state.allData.filter(
+                (data) => data.id !== action.payload
             );
             state.allPage = Math.ceil(state.filteredData.length / 10);
+            state.currentPage = Math.min(state.currentPage, state.allPage);
         },
-        setDeleteSelectedData: (state) => {
-            const updatedData = [];
-            let i = 0;
-            let j = 0;
-            while (
-                i < state.filteredData.length &&
-                j < state.selectedData.length
-            ) {
-                const currentElement = state.filteredData[i];
-                const elementIdToDelete = state.selectedData[j];
-
-                if (currentElement.id === elementIdToDelete) {
-                    i++;
-                    j++;
-                } else if (currentElement.id < elementIdToDelete) {
-                    updatedData.push(currentElement);
-                    i++;
-                } else {
-                    j++;
+        setDeleteSelectedData: (state, action) => {
+            const updatedFilteredData = state.filteredData.filter((data) => {
+                if (action.payload.includes(data.id)) {
+                    return false;
                 }
-            }
-
-            while (i < state.filteredData.length) {
-                updatedData.push(state.filteredData[i]);
-                i++;
-            }
-
-            state.filteredData = updatedData;
-            state.selectedData = [];
-            state.allPage = Math.ceil(state.filteredData.length / 10);
+                return true;
+            });
+            const updatedAllData = state.allData.filter((data) => {
+                if (action.payload.includes(data.id)) {
+                    return false;
+                }
+                return true;
+            });
+            state.filteredData = updatedFilteredData;
+            state.allData = updatedAllData;
         },
         setEditData: (state, action) => {
-            const updatedData = state.filteredData.map((data) => {
+            const updatedFilteredData = state.filteredData.map((data) => {
+                if (action.payload.includes(data.id)) {
+                    return { ...data, checked: !data.checked };
+                }
+                return data;
+            });
+            const updatedAllData = state.allData.map((data) => {
+                if (action.payload.includes(data.id)) {
+                    return { ...data, checked: !data.checked };
+                }
+                return data;
+            });
+            state.filteredData = updatedFilteredData;
+            state.allData = updatedAllData;
+        },
+        setEditSingleData: (state, action) => {
+            const updatedFilteredData = state.filteredData.map((data) => {
                 if (data.id === action.payload.id) return action.payload;
                 return data;
             });
-            state.filteredData = updatedData;
+            const updatedAllData = state.allData.map((data) => {
+                if (data.id === action.payload.id) return action.payload;
+                return data;
+            });
+            state.filteredData = updatedFilteredData;
+            state.allData = updatedAllData;
         },
         setPage: (state, action) => {
             const pageNumber = action.payload;
             state.currentPage = pageNumber;
         },
-        setSelectedData: (state, action) => {
-            if (action.payload.add) {
-                state.selectedData.push(action.payload.id);
-            } else {
-                const index = state.selectedData.indexOf(action.payload.id);
-                state.selectedData.splice(index, 1);
-            }
-        },
     },
 });
 
 export const {
+    setInitialData,
     setAllData,
-    setDeleteData,
+    setDeleteSingleData,
     setDeleteSelectedData,
     setFilteredData,
     setEditData,
+    setEditSingleData,
     setPage,
-    setSelectedData,
 } = dataSlice.actions;
 export default dataSlice.reducer;

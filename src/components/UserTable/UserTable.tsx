@@ -1,7 +1,12 @@
 import UserBar from "../TableData/TableData";
 import { useSelector, useDispatch } from "react-redux";
 import { useEffect } from "react";
-import { setAllData, setSelectedData } from "../../store/slice";
+import {
+    setInitialData,
+    setDeleteSingleData,
+    setEditSingleData,
+    setEditData,
+} from "../../store/slice";
 import { User } from "../../types";
 import "./UserTable.css";
 
@@ -14,9 +19,11 @@ const UserTable = () => {
         )
             .then((response) => response.json())
             .then((data) => {
-                const doubleData = [...data, ...data];
-                console.log("Data", doubleData);
-                dispatch(setAllData(doubleData));
+                // all property of checked to data
+                data.forEach((user: User) => {
+                    user.checked = false;
+                });
+                dispatch(setInitialData(data));
             })
             .catch((error) => console.error("Error fetching tasks:", error));
     }, [dispatch]);
@@ -25,20 +32,33 @@ const UserTable = () => {
         (state: any) => state.data.currentPage
     );
 
-    const currentData: Array<User> = useSelector(
+    const filteredData: Array<User> = useSelector(
         (state: any) => state.data.filteredData
-    ).slice((pageNumber - 1) * 10, pageNumber * 10);
+    );
 
-    const selectDataHandler = (e: any) => {
-        console.log("Select Data", e.target.checked);
-        dispatch(
-            setSelectedData(
-                currentData.map((user: User) => ({
-                    id: user.id,
-                    checked: e.target.checked,
-                }))
-            )
-        );
+    const currentData = filteredData.slice(
+        (pageNumber - 1) * 10,
+        pageNumber * 10
+    );
+
+    const selectDataHandler = () => {
+        const selectedId = currentData.map((user) => user.id);
+        dispatch(setEditData(selectedId));
+    };
+
+    const selectOneDataHandler = (id: string) => {
+        const selectedData = filteredData.find((user) => user.id === id);
+        if (selectedData) {
+            const updatedData = {
+                ...selectedData,
+                checked: !selectedData.checked,
+            };
+            dispatch(setEditSingleData(updatedData));
+        }
+    };
+
+    const deleteOneDataHandler = (id: string) => {
+        dispatch(setDeleteSingleData(id));
     };
 
     return (
@@ -59,7 +79,12 @@ const UserTable = () => {
             {currentData.length ? (
                 <div>
                     {currentData.map((user) => (
-                        <UserBar key={user.id} user={user} />
+                        <UserBar
+                            key={user.id}
+                            user={user}
+                            selectOneDataHandler={selectOneDataHandler}
+                            deleteOneDataHandler={deleteOneDataHandler}
+                        />
                     ))}
                 </div>
             ) : (
