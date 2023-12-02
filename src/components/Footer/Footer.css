@@ -1,14 +1,21 @@
 .footer {
+    position: fixed;
+    bottom: 0;
+    width: 100%;
+    height: 3rem;
+}
+
+.footer-content {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    margin: 2rem 0;
+    position: fixed;
+    width: 98%;
 }
 
 .left-footer {
     display: flex;
     align-items: center;
-    gap: 3rem;
 }
 
 .delete-selected {
@@ -19,10 +26,9 @@
     height: 2.5rem;
 }
 
-.pages {
+.right-footer {
     display: flex;
     justify-content: space-between;
-    gap: 10px;
     align-items: center;
 }
 
@@ -31,4 +37,9 @@
     border: 1px solid #ccc;
     border-radius: 4px;
     cursor: pointer;
+}
+
+.red-button {
+    background-color: #d45e5e;
+    color: #fff;
 }

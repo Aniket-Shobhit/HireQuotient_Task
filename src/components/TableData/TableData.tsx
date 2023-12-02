@@ -1,6 +1,11 @@
 import "./TableData.css";
 import { useState, useRef } from "react";
 import { User } from "../../types";
+import { MdEdit } from "react-icons/md";
+import { MdDelete } from "react-icons/md";
+import { MdDownloadDone } from "react-icons/md";
+import { useDispatch } from "react-redux";
+import { setEditData } from "../../store/slice";
 
 interface UserBarProps {
     user: User;
@@ -13,6 +18,8 @@ const UserBar: React.FC<UserBarProps> = ({ user }) => {
     const emailRef = useRef<HTMLInputElement>(null);
     const roleRef = useRef<HTMLInputElement>(null);
 
+    const dispatch = useDispatch();
+
     const editDataHandler = () => {
         setEditable(true);
         console.log("Edit Data");
@@ -24,6 +31,7 @@ const UserBar: React.FC<UserBarProps> = ({ user }) => {
         const role = roleRef.current?.value || user.role;
         const newUser = { ...currentUser, name, email, role };
         setCurrentUser(newUser);
+        dispatch(setEditData(newUser));
         setEditable(false);
     };
 
@@ -72,15 +80,15 @@ const UserBar: React.FC<UserBarProps> = ({ user }) => {
             <div className="icons">
                 {!editable ? (
                     <button className="edit-icon" onClick={editDataHandler}>
-                        Edit
+                        <MdEdit />
                     </button>
                 ) : (
                     <button className="edit-icon" onClick={doneDataHandler}>
-                        Done
+                        <MdDownloadDone />
                     </button>
                 )}
                 <button className="delete-icon" onClick={deleteDataHandler}>
-                    Delete
+                    <MdDelete />
                 </button>
             </div>
         </div>
