@@ -1,30 +1,44 @@
-# React + TypeScript + Vite
+# User Management Interface
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
 
-Currently, two official plugins are available:
+## Features
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react/README.md) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+- **Effortless User Management:**
+  - Streamlined interface for admins to efficiently view, edit, and delete user records.
 
-## Expanding the ESLint configuration
+- **Search and Filter:**
+  - Intuitive search bar enabling quick filtering based on user properties.
 
-If you are developing a production application, we recommend updating the configuration to enable type aware lint rules:
+- **In-Memory Editing and Deletion:**
+  - Edit or delete rows on the fly, with changes reflecting only in-memory (non-persistent).
 
-- Configure the top-level `parserOptions` property like this:
+- **Pagination for Enhanced Navigation:**
+  - Pagination controls with first, previous, next, last page options, adapting dynamically to search results.
 
-```js
-export default {
-  // other rules...
-  parserOptions: {
-    ecmaVersion: 'latest',
-    sourceType: 'module',
-    project: ['./tsconfig.json', './tsconfig.node.json'],
-    tsconfigRootDir: __dirname,
-  },
-}
-```
+- **Convenient Row Selection:**
+  - Easily select one or more rows with a highlighted background for clarity.
 
-- Replace `plugin:@typescript-eslint/recommended` to `plugin:@typescript-eslint/recommended-type-checked` or `plugin:@typescript-eslint/strict-type-checked`
-- Optionally add `plugin:@typescript-eslint/stylistic-type-checked`
-- Install [eslint-plugin-react](https://github.com/jsx-eslint/eslint-plugin-react) and add `plugin:react/recommended` & `plugin:react/jsx-runtime` to the `extends` list
+- **Select All Shortcut:**
+  - Checkbox at the top left for a quick select/deselect all function, applicable to the current page.
+
+- **Action Elements for Easy Navigation:**
+  - Edit, delete, and save actions presented as user-friendly buttons.
+
+## Getting Started
+
+1. **Clone the Repository:**
+   ```bash
+   git clone https://github.com/Aniket-Shobhit/HireQuotient_Task.git
+   cd HireQuotient_Task
+
+2. **Install dependencies:**
+   ```bash
+   npm i
+
+3. **Run the project server:**
+   ```bash
+   npm run dev
+
+4. **Open in Browser:**
+   Open your web browser and go to http://localhost:5173/
+
